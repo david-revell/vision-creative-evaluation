@@ -6,14 +6,15 @@ import csv
 import json
 import mimetypes
 import os
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 from dotenv import load_dotenv
 from openai import OpenAI
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT.parent / "provided_assessment_pack"
+DATA_DIR = ROOT / "provided_assessment_pack"
 IMAGES_DIR = DATA_DIR / "data"
 GT_PATH = DATA_DIR / "ground_truth.csv"
 QUESTIONS_PATH = ROOT / "questions_structured.json"
@@ -30,7 +31,7 @@ def read_ground_truth() -> tuple[list[str], list[dict[str, str]]]:
 
 
 def read_questions_structured() -> dict:
-    with QUESTIONS_PATH.open("r", encoding="utf-8") as f:
+    with QUESTIONS_PATH.open("r", encoding="utf-8-sig") as f:
         return json.load(f)
 
 
@@ -113,14 +114,15 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="gpt-5-nano")
     parser.add_argument("--limit", type=int, default=3)
-    parser.add_argument("--out", default="outputs/predictions_smoke_3.csv")
+    parser.add_argument("--run-id", default=None, help="Run identifier. Default is current timestamp.")
+    parser.add_argument("--out", default=None, help="Optional explicit output file path")
     parser.add_argument("--ids", nargs="*", default=None, help="Optional explicit creative_ids")
     args = parser.parse_args()
 
     load_dotenv(ROOT / ".env")
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        raise EnvironmentError("OPENAI_API_KEY not found. Add it to repo/.env")
+        raise EnvironmentError("OPENAI_API_KEY not found. Add it to .env")
 
     cols, gt_rows = read_ground_truth()
     question_cols = [c for c in cols if c != "creative_id"]
@@ -132,6 +134,14 @@ def main() -> None:
     else:
         selected_ids = [r["creative_id"] for r in gt_rows[: max(1, args.limit)]]
 
+    run_id = args.run_id or datetime.now().strftime("%Y%m%d_%H%M%S")
+    if args.out:
+        out_path = Path(args.out)
+        if not out_path.is_absolute():
+            out_path = ROOT / out_path
+    else:
+        out_path = ROOT / "outputs" / "runs" / run_id / f"predictions_smoke_{len(selected_ids)}.csv"
+
     client = OpenAI(api_key=api_key)
 
     predictions: Dict[str, dict] = {}
@@ -139,9 +149,6 @@ def main() -> None:
         print(f"Inferring: {cid}")
         predictions[cid] = infer_one(client, args.model, cid, question_cols, instruction)
 
-    out_path = Path(args.out)
-    if not out_path.is_absolute():
-        out_path = ROOT / out_path
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     with out_path.open("w", encoding="utf-8", newline="") as f:
@@ -150,6 +157,7 @@ def main() -> None:
         for cid in selected_ids:
             writer.writerow(predictions[cid])
 
+    print("Run ID:", run_id)
     print(f"Saved predictions: {out_path}")
     print(f"Rows written: {len(selected_ids)}")
 

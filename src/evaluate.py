@@ -3,14 +3,13 @@
 import argparse
 import csv
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT.parent / "provided_assessment_pack"
+DATA_DIR = ROOT / "provided_assessment_pack"
 GT_PATH = DATA_DIR / "ground_truth.csv"
-METRICS_PATH = ROOT / "outputs" / "metrics_summary.json"
-ERRORS_PATH = ROOT / "outputs" / "error_rows.csv"
 
 
 def norm_text(value: str) -> str:
@@ -82,14 +81,16 @@ def evaluate(pred_path: Path, scope: str = "all") -> dict:
             if is_correct:
                 per_q[col]["correct"] += 1
             else:
-                errors.append({
-                    "creative_id": cid,
-                    "question": col,
-                    "ground_truth": gt_row.get(col, ""),
-                    "prediction": pred_row.get(col, ""),
-                    "ground_truth_norm": gt_val,
-                    "prediction_norm": pred_val,
-                })
+                errors.append(
+                    {
+                        "creative_id": cid,
+                        "question": col,
+                        "ground_truth": gt_row.get(col, ""),
+                        "prediction": pred_row.get(col, ""),
+                        "ground_truth_norm": gt_val,
+                        "prediction_norm": pred_val,
+                    }
+                )
 
     for col, stats in per_q.items():
         total = stats["total"]
@@ -113,6 +114,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--predictions", required=True, help="Path to predictions CSV")
     parser.add_argument("--scope", choices=["all", "common"], default="all", help="all = score all GT rows; common = only IDs present in both GT and predictions")
+    parser.add_argument("--run-id", default=None, help="Run identifier. Default is current timestamp.")
+    parser.add_argument("--out-dir", default="outputs/runs", help="Directory under which run folders are created")
     args = parser.parse_args()
 
     pred_path = Path(args.predictions)
@@ -121,24 +124,34 @@ def main() -> None:
     if not pred_path.exists():
         raise FileNotFoundError(f"Predictions file not found: {pred_path}")
 
+    run_id = args.run_id or datetime.now().strftime("%Y%m%d_%H%M%S")
+    out_root = Path(args.out_dir)
+    if not out_root.is_absolute():
+        out_root = ROOT / out_root
+    run_dir = out_root / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    metrics_path = run_dir / "metrics_summary.json"
+    errors_path = run_dir / "error_rows.csv"
+
     result = evaluate(pred_path, scope=args.scope)
 
-    METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with METRICS_PATH.open("w", encoding="utf-8") as f:
+    with metrics_path.open("w", encoding="utf-8") as f:
         json.dump({k: v for k, v in result.items() if k != "errors"}, f, indent=2)
 
-    with ERRORS_PATH.open("w", encoding="utf-8", newline="") as f:
+    with errors_path.open("w", encoding="utf-8", newline="") as f:
         fields = ["creative_id", "question", "ground_truth", "prediction", "ground_truth_norm", "prediction_norm"]
         writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()
         writer.writerows(result["errors"])
 
+    print("Run ID:", run_id)
     print("Scope:", result["scope"])
     print("Scored rows:", result["scored_rows"])
     print("Macro accuracy:", result["macro_accuracy"])
     print("Errors:", result["error_count"])
-    print(f"Saved: {METRICS_PATH}")
-    print(f"Saved: {ERRORS_PATH}")
+    print(f"Saved: {metrics_path}")
+    print(f"Saved: {errors_path}")
 
 
 if __name__ == "__main__":

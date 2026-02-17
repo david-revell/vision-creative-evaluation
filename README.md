@@ -1,89 +1,69 @@
-﻿# Satalia AI Engineer Assessment - Minimal Scaffold
+﻿# Vision Creative Eval
 
-This repo uses a KISS setup so you can work in small steps.
+## Data Inputs (local-only)
 
-## Location
-
-Project root:
-`C:\Users\david\Dropbox\private_workspace\satalia\ai-eng-prompt-engineering-eval`
-
-Deliverable repo root:
-`C:\Users\david\Dropbox\private_workspace\satalia\ai-eng-prompt-engineering-eval\repo`
-
-## Data Inputs
-
-Data lives one level above `repo/` in:
+Expected local path:
 
 - `provided_assessment_pack/questions_basic.txt`
 - `provided_assessment_pack/ground_truth.csv`
 - `provided_assessment_pack/data/`
 
+These provided files are intentionally git-ignored.
+
 ## Environment Variables
 
-This project uses `.env` for local secrets.
-
-1. Create `.env` from the template:
+Create `.env` from template and add key:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-2. Add your API key in `repo/.env`:
-
 ```env
 OPENAI_API_KEY=your_key_here
 ```
 
-Security notes:
-
-- `.env` is ignored by git via `repo/.gitignore`.
-- Never commit real API keys.
-- `.env.example` is safe to commit and documents required variables.
-
-## Install
+## Setup
 
 ```powershell
 pip install -r requirements.txt
 ```
 
-## Step 1: Create a predictions template
+## Artefacts vs Runs
 
-Run from the `repo/` directory:
+- `artefacts/`: static scaffolds (e.g., predictions template)
+- `outputs/runs/<run_id>/`: run-specific predictions + metrics + error rows
+
+## 1) Create predictions template (non-run scaffold)
 
 ```powershell
 python src\make_predictions_template.py
 ```
 
-Output:
+Writes:
 
-- `outputs/predictions_template.csv`
+- `artefacts/predictions_template.csv`
 
-## Step 2: Smoke inference on 3 images (`gpt-5-nano`)
+## 2) Smoke inference on 3 images
 
-```powershell
-python src\run_inference_smoke.py --model gpt-5-nano --limit 3 --out outputs\predictions_smoke_3.csv
-```
-
-Output:
-
-- `outputs/predictions_smoke_3.csv`
-
-## Step 3: Evaluate smoke run (only scored IDs)
-
-Use `--scope common` so only the 3 predicted IDs are scored.
+You can use any run ID (for example, smoke_run2).
 
 ```powershell
-python src\evaluate.py --predictions outputs\predictions_smoke_3.csv --scope common
+python src\run_inference_smoke.py --model gpt-5-nano --limit 3 --run-id smoke_run2
 ```
 
-Outputs:
+Writes:
 
-- Console metrics summary
-- `outputs/metrics_summary.json`
-- `outputs/error_rows.csv`
+- `outputs/runs/smoke_run2/predictions_smoke_3.csv`
 
-## Notes
+## 3) Evaluate smoke run
 
-- The evaluator is intentionally strict and simple.
-- It currently uses exact-match after normalization (trim/lower/canonical yes/no).
-- We can add fuzzy normalization later (especially for color scheme).
+```powershell
+python src\evaluate.py --predictions outputs\runs\smoke_run2\predictions_smoke_3.csv --scope common --run-id smoke_run2
+```
+
+Writes:
+
+- `outputs/runs/smoke_run2/metrics_summary.json`
+- `outputs/runs/smoke_run2/error_rows.csv`
+
+
