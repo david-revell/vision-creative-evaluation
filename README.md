@@ -4,9 +4,9 @@
 
 Expected local path:
 
-- `provided_assessment_pack/questions_basic.txt`
-- `provided_assessment_pack/ground_truth.csv`
-- `provided_assessment_pack/data/`
+- `data/raw/questions_basic.txt`
+- `data/raw/ground_truth.csv`
+- `data/raw/data/`
 
 These provided files are intentionally git-ignored.
 
@@ -65,5 +65,6 @@ Writes:
 
 - `outputs/runs/smoke_run2/metrics_summary.json`
 - `outputs/runs/smoke_run2/error_rows.csv`
+
 
 

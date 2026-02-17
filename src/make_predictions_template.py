@@ -3,7 +3,7 @@ from pathlib import Path
 import csv
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = ROOT / "provided_assessment_pack"
+DATA_DIR = ROOT / "data/raw"
 GT_PATH = DATA_DIR / "ground_truth.csv"
 
 
@@ -39,3 +39,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

@@ -10,9 +10,11 @@ __pycache__/
 .DS_Store
 Thumbs.db
 .vscode/
-provided_assessment_pack/
+data/raw/
 outputs/
 .venv/
 ai_engineer_satalia_jd.md
 assessment_brief.md
 artefacts/
+
+data/raw/
