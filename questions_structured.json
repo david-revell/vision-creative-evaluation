@@ -1,0 +1,85 @@
+﻿{
+  "source": "AI Eng Prompt Engineering Eval/questions_basic.txt",
+  "questions": [
+    {
+      "id": "q1_product",
+      "question": "Does this creative feature a product?",
+      "answer_type": "binary",
+      "allowed_answers": ["yes", "no"],
+      "instruction": "Answer yes if a product is visibly featured as a main element; otherwise no."
+    },
+    {
+      "id": "q2_person",
+      "question": "Does this creative feature a person?",
+      "answer_type": "binary",
+      "allowed_answers": ["yes", "no"],
+      "instruction": "Answer yes if any person is visibly present in the creative; otherwise no."
+    },
+    {
+      "id": "q3_cta",
+      "question": "Does this creative contain a call to action?",
+      "answer_type": "binary",
+      "allowed_answers": ["yes", "no"],
+      "instruction": "Answer yes if there is explicit directive text like buy now, shop now, learn more, sign up."
+    },
+    {
+      "id": "q4_out_of_focus",
+      "question": "Is this creative out of focus?",
+      "answer_type": "binary",
+      "allowed_answers": ["yes", "no"],
+      "instruction": "Answer yes only if the overall creative appears noticeably blurred or unfocused."
+    },
+    {
+      "id": "q5_logo_present",
+      "question": "Does this creative contain a brand logo?",
+      "answer_type": "binary",
+      "allowed_answers": ["yes", "no"],
+      "instruction": "Answer yes if a brand logo mark or brand wordmark is visible."
+    },
+    {
+      "id": "q6_logo_location",
+      "question": "Where in the image is the logo located?",
+      "answer_type": "categorical",
+      "allowed_answers": [
+        "no logo",
+        "top-left",
+        "top-center",
+        "top-right",
+        "center-left",
+        "center",
+        "center-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right"
+      ],
+      "instruction": "If no logo exists, answer no logo. Otherwise choose the single closest location label."
+    },
+    {
+      "id": "q7_overlay_text",
+      "question": "Does this creative contain overlay text?",
+      "answer_type": "binary",
+      "allowed_answers": ["yes", "no"],
+      "instruction": "Answer yes if text appears over the image as part of the creative design."
+    },
+    {
+      "id": "q8_urgency",
+      "question": "Does this creative communicate urgency?",
+      "answer_type": "binary",
+      "allowed_answers": ["yes", "no"],
+      "instruction": "Answer yes if wording or visuals imply urgency, scarcity, or immediate action."
+    },
+    {
+      "id": "q9_color_scheme",
+      "question": "What is the primary colour scheme?",
+      "answer_type": "free_text",
+      "instruction": "Provide concise dominant colours as comma-separated lowercase names (e.g., white, blue, black)."
+    },
+    {
+      "id": "q10_promotion",
+      "question": "Does this creative contain a promotion or special deal?",
+      "answer_type": "binary",
+      "allowed_answers": ["yes", "no"],
+      "instruction": "Answer yes if a discount, offer, sale, or special deal is explicitly present."
+    }
+  ]
+}

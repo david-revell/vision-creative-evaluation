@@ -1,0 +1,17 @@
+﻿# Local environment and secrets
+.env
+*.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+provided_assessment_pack/
+outputs/
+.venv/
+ai_engineer_satalia_jd.md
+assessment_brief.md
