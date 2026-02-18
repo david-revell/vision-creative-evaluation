@@ -34,7 +34,7 @@
       "question": "Does this creative contain a brand logo?",
       "answer_type": "binary",
       "allowed_answers": ["yes", "no"],
-      "instruction": "Answer yes if a brand logo mark or brand wordmark is visible."
+      "instruction": "Answer yes only if there is a distinct branding element (symbol or stylised brand text) confined to a local area of the image. If brand text is large headline copy spanning multiple layout regions, treat it as overlay text, not a logo."
     },
     {
       "id": "q6_logo_location",
@@ -83,3 +83,4 @@
     }
   ]
 }
+
