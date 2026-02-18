@@ -66,10 +66,27 @@ Notes:
 python src\evaluate.py --predictions outputs\runs\smoke_run2\predictions_smoke_3.csv --scope common --run-id smoke_run2
 ```
 
+Tip:
+
+- Use the same `--run-id` for inference and evaluation to keep one folder per run.
+
 Writes:
 
 - `outputs/runs/smoke_run2/metrics_summary.json`
 - `outputs/runs/smoke_run2/error_rows.csv`
+
+Optional (colour-only LLM judge):
+
+```powershell
+python src\evaluate.py --predictions outputs\runs\smoke_run2\predictions_smoke_3.csv --scope common --run-id smoke_run2 --use-llm-judge-colour
+```
+
+When `--use-llm-judge-colour` is enabled:
+
+- Judge scope is only `What is the primary colour scheme?` mismatches.
+- Judge model is fixed to `gpt-5-nano` with default model settings.
+- `error_rows.csv` includes `llm_judge_verdict` (`YES`/`NO` when invoked) and `final_is_error`.
+- Judged colour rows are always written to `error_rows.csv` for traceability, even when the final verdict is not an error (`final_is_error=no`).
 
 
 
