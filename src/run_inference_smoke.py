@@ -42,10 +42,14 @@ def build_instruction(question_spec: dict, question_cols: list[str]) -> str:
     lines.append("Output a single JSON object with exactly these keys:")
     for c in question_cols:
         lines.append(f"- {c}")
+    for c in question_cols:
+        lines.append(f"- {c}_explanation")
     lines.append("Use lowercase answers where possible.")
     lines.append("For yes/no questions, answer strictly: yes or no.")
     lines.append("For logo location, use one of: no logo, top-left, top-center, top-right, center-left, center, center-right, bottom-left, bottom-center, bottom-right.")
     lines.append("For primary colour scheme, provide concise dominant colours as comma-separated lowercase names.")
+    lines.append("For each *_explanation key, provide one short sentence based only on visible evidence in the image.")
+    lines.append("If you cannot provide evidence, return an empty string for that *_explanation.")
     lines.append("Question guidance:")
 
     by_q = {q["question"]: q for q in question_spec.get("questions", [])}
@@ -107,6 +111,7 @@ def infer_one(client: OpenAI, model: str, creative_id: str, question_cols: list[
     out = {"creative_id": creative_id}
     for q in question_cols:
         out[q] = str(data.get(q, "")).strip()
+        out[f"{q}_explanation"] = str(data.get(f"{q}_explanation", "")).strip()
     return out
 
 
@@ -126,6 +131,7 @@ def main() -> None:
 
     cols, gt_rows = read_ground_truth()
     question_cols = [c for c in cols if c != "creative_id"]
+    explanation_cols = [f"{q}_explanation" for q in question_cols]
     question_spec = read_questions_structured()
     instruction = build_instruction(question_spec, question_cols)
 
@@ -152,7 +158,7 @@ def main() -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     with out_path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=cols)
+        writer = csv.DictWriter(f, fieldnames=cols + explanation_cols)
         writer.writeheader()
         for cid in selected_ids:
             writer.writerow(predictions[cid])

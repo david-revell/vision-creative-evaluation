@@ -24,7 +24,9 @@ def main() -> None:
     if not fieldnames:
         raise RuntimeError("ground_truth.csv appears empty or malformed")
 
-    template_fields = fieldnames
+    question_fields = [c for c in fieldnames if c != "creative_id"]
+    explanation_fields = [f"{c}_explanation" for c in question_fields]
+    template_fields = fieldnames + explanation_fields
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=template_fields)

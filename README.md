@@ -55,6 +55,11 @@ Writes:
 
 - `outputs/runs/smoke_run2/predictions_smoke_3.csv`
 
+Notes:
+
+- The CSV includes both answer columns and `<question>_explanation` columns.
+- Evaluator scoring uses the answer columns only (explanations are stored for audit/review).
+
 ## 3) Evaluate smoke run
 
 ```powershell
