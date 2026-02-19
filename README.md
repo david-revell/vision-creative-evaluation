@@ -87,6 +87,8 @@ When `--use-llm-judge-colour` is enabled:
 - Judge model is fixed to `gpt-5-nano` with default model settings.
 - `error_rows.csv` includes `llm_judge_verdict` (`YES`/`NO` when invoked) and `final_is_error`.
 - Judged colour rows are always written to `error_rows.csv` for traceability, even when the final verdict is not an error (`final_is_error=no`).
+- Because of that audit behaviour, `error_rows_written` can be higher than `error_count` in `metrics_summary.json`.
+- This is an offline benchmarking pattern that depends on labelled ground truth.
 
 
 
