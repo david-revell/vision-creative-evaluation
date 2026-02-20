@@ -1,4 +1,14 @@
-﻿# Vision Creative Eval
+﻿# Vision Model Evaluation Framework
+**Prompt Engineering & Evaluation for Advertising Creatives**
+
+Assessment submission for Satalia AI Engineer position.
+
+---
+
+## Prerequisites
+
+- Python 3.10+ (tested on Python 3.11.9)
+- OpenAI API access
 
 ## Data Inputs (local-only)
 
@@ -60,7 +70,19 @@ Notes:
 - The CSV includes both answer columns and `<question>_explanation` columns.
 - Evaluator scoring uses the answer columns only (explanations are stored for audit/review).
 
-## 3) Evaluate smoke run
+## 3) Full inference on all 30 images
+
+```powershell
+python src\run_inference_smoke.py --model gpt-5-nano --run-id full_run1
+```
+
+(Omitting `--limit` processes all creatives in the dataset)
+
+Writes:
+
+- `outputs/runs/full_run1/predictions_smoke_30.csv`
+
+## 4) Evaluate run
 
 ```powershell
 python src\evaluate.py --predictions outputs\runs\smoke_run2\predictions_smoke_3.csv --scope common --run-id smoke_run2
@@ -69,13 +91,14 @@ python src\evaluate.py --predictions outputs\runs\smoke_run2\predictions_smoke_3
 Tip:
 
 - Use the same `--run-id` for inference and evaluation to keep one folder per run.
+- For full run: `--predictions outputs\runs\full_run1\predictions_smoke_30.csv --scope all --run-id full_run1`
 
 Writes:
 
-- `outputs/runs/smoke_run2/metrics_summary.json`
-- `outputs/runs/smoke_run2/error_rows.csv`
+- `outputs/runs/<run_id>/metrics_summary.json`
+- `outputs/runs/<run_id>/error_rows.csv`
 
-Optional (colour-only LLM judge):
+### Optional: Colour-only LLM judge
 
 ```powershell
 python src\evaluate.py --predictions outputs\runs\smoke_run2\predictions_smoke_3.csv --scope common --run-id smoke_run2 --use-llm-judge-colour
@@ -89,6 +112,7 @@ When `--use-llm-judge-colour` is enabled:
 - Judged colour rows are always written to `error_rows.csv` for traceability, even when the final verdict is not an error (`final_is_error=no`).
 - Because of that audit behaviour, `error_rows_written` can be higher than `error_count` in `metrics_summary.json`.
 - This is an offline benchmarking pattern that depends on labelled ground truth.
+
 
 
 
