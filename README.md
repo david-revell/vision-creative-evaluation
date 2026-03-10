@@ -1,7 +1,9 @@
-﻿# Vision Model Evaluation Framework
+# Vision Model Evaluation Framework
 **Prompt Engineering & Evaluation for Advertising Creatives**
 
 Assessment submission for Satalia AI Engineer position.
+
+Technical report: [docs/vision_creative_evaluation_report.pdf](docs/vision_creative_evaluation_report.pdf)
 
 ---
 
